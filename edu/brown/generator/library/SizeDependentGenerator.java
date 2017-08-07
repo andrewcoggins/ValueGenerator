@@ -1,9 +1,7 @@
 package brown.generator.library;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -11,10 +9,10 @@ import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 import org.apache.commons.math3.random.ISAACRandom;
 
 import brown.generator.IGenerator;
-import brown.valuable.IValuable;
 import brown.valuable.library.Bundle;
 import brown.valuable.library.Good;
 import brown.valuation.IValuation;
+import brown.valuation.library.AdditiveValuation;
 import brown.valuation.library.AdditiveValuationSet;
 import brown.valuation.library.BundleValuation;
 import brown.valuation.library.BundleValuationSet;
@@ -30,13 +28,24 @@ public class SizeDependentGenerator implements IGenerator {
   }
   
   @Override
-  public AdditiveValuationSet getAdditiveValuation(IValuable valuable) {
-    return null; 
+  public AdditiveValuation getSingleValuation(Good aGood) {
+   Double value = valFunction.apply(1);
+   return new AdditiveValuation(aGood, value);
+  }
+  
+  @Override
+  public AdditiveValuationSet getAdditiveValuation(Bundle bundle) { 
+    AdditiveValuationSet returnSet = new AdditiveValuationSet(); 
+    Double meanValue = valFunction.apply(1);
+    for(Good g : bundle.bundle) {
+      AdditiveValuation a = new AdditiveValuation(g, meanValue);
+      returnSet.add(a);
+    }
+    return returnSet;
   }
 
   @Override
-  public BundleValuationSet getAllBundleValuations(IValuable valuable) {
-    Bundle bundle = (Bundle) valuable;
+  public BundleValuationSet getAllBundleValuations(Bundle bundle) {
     //initialize a bundle of existing sets.
     BundleValuationSet existingSets = new BundleValuationSet();
     //add an empty bundle
@@ -65,10 +74,9 @@ public class SizeDependentGenerator implements IGenerator {
   }
 
   @Override
-  public BundleValuationSet getSomeBundleValuations(IValuable valuable,
+  public BundleValuationSet getSomeBundleValuations(Bundle bundle,
       Integer numberOfValuations, Integer bundleSizeMean,
       Double bundleSizeStdDev) {
-    Bundle bundle = (Bundle) valuable; 
     //check valid inputs for bundle size mean and std. dev.
     if (bundleSizeMean > 0 && bundleSizeStdDev > 0) {
       //create a normal distribution to draw bundle sizes. 

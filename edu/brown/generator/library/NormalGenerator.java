@@ -1,7 +1,6 @@
 package brown.generator.library; 
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList; 
 import java.util.Map;
@@ -14,11 +13,11 @@ import org.apache.commons.math3.random.ISAACRandom;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import brown.generator.IGenerator;
-import brown.valuable.IValuable;
 import brown.valuable.library.Bundle;
 import brown.valuable.library.Good;
 import brown.valuation.IValuation;
 import brown.valuation.IValuationSet;
+import brown.valuation.library.AdditiveValuation;
 import brown.valuation.library.AdditiveValuationSet;
 import brown.valuation.library.BundleValuation;
 import brown.valuation.library.BundleValuationSet;
@@ -53,14 +52,35 @@ public class NormalGenerator implements IGenerator {
   }
  
   @Override
-  public AdditiveValuationSet getAdditiveValuation(IValuable valuable) {
-    // TODO Auto-generated method stub
-    return null;
+  public AdditiveValuation getSingleValuation(Good aGood) {
+   RandomGenerator rng = new ISAACRandom();
+   Double meanValue = valFunction.apply(1);
+   NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
+   Double actualValue = -1.0;
+   while (actualValue < 0)
+     actualValue = normalDist.sample();
+   return new AdditiveValuation(aGood, actualValue);
   }
 
   @Override
-  public BundleValuationSet getAllBundleValuations(IValuable valuable) {
-    Bundle bundle = (Bundle) valuable; 
+  public AdditiveValuationSet getAdditiveValuation(Bundle bundle) {
+    RandomGenerator rng = new ISAACRandom();
+    AdditiveValuationSet returnSet = new AdditiveValuationSet(); 
+    Double meanValue = valFunction.apply(1);
+    NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
+    for(Good g : bundle.bundle) {
+      Double actualValue = -1.0;
+      while(actualValue < 0.0) {
+      actualValue = normalDist.sample();
+      }
+      AdditiveValuation a = new AdditiveValuation(g, actualValue);
+      returnSet.add(a);
+    }
+    return returnSet;
+  }
+
+  @Override
+  public BundleValuationSet getAllBundleValuations(Bundle bundle) {
     populateVarCoVarMatrix(bundle);
     //random generator for all distributions in this method
     RandomGenerator rng = new ISAACRandom();
@@ -138,10 +158,9 @@ public class NormalGenerator implements IGenerator {
   }
 
   @Override
-  public BundleValuationSet getSomeBundleValuations(IValuable valuable,
+  public BundleValuationSet getSomeBundleValuations(Bundle bundle,
       Integer numberOfValuations, Integer bundleSizeMean,
-      Double bundleSizeStdDev) {
-    Bundle bundle = (Bundle) valuable; 
+      Double bundleSizeStdDev) { 
     if (bundleSizeMean > 0 && bundleSizeStdDev > 0) {
       populateVarCoVarMatrix(bundle);
       RandomGenerator rng = new ISAACRandom();
