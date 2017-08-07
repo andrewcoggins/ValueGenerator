@@ -1,32 +1,33 @@
 package brown.valuation.library; 
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
+
 import brown.valuable.IValuable;
+import brown.valuable.library.Good;
 import brown.valuation.IValuation;
 
 public class AdditiveValuation implements IValuation {
 
+  private SimpleEntry<Good, Double> entry; 
+  
+  public AdditiveValuation(Good aGood, Double value) {
+    this.entry = new SimpleEntry<Good, Double>(aGood, value);
+  }
+  
   @Override
   public IValuable getValuable() {
-    // TODO Auto-generated method stub
-    return null;
+    return (Good) this.entry.getKey();
   }
 
   @Override
   public Double getPrice() {
-    // TODO Auto-generated method stub
-    return null;
+    return this.entry.getValue();
   }
 
   @Override
-  public void setPrice() {
-    // TODO Auto-generated method stub
-    
+  public void setPrice(Double newPrice) {
+    entry.setValue(newPrice);
   }
 
-  @Override
-  public Boolean contains(IValuable val) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-  
 }

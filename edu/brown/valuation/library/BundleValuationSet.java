@@ -1,96 +1,117 @@
 package brown.valuation.library; 
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import brown.valuable.IValuable;
+import brown.valuable.library.Bundle;
 import brown.valuation.IValuation;
 import brown.valuation.IValuationSet;
 
-public class BundleValuationSet implements IValuationSet {
+public class BundleValuationSet implements IValuationSet,
+Iterable<IValuation> {
 
+  private Map<Bundle, Double> valMap;
+  
+  public BundleValuationSet() {
+    this.valMap = new HashMap<Bundle, Double>();
+  }
+  
+  public BundleValuationSet(Map<Bundle, Double> aMap) {
+    this.valMap = aMap;
+  }
+  
+  public BundleValuationSet(BundleValuationSet a) {
+    this.valMap = new HashMap<Bundle, Double>(); 
+    this.addAll(a);
+  }
+  
   @Override
   public void add(IValuation val) {
-    // TODO Auto-generated method stub
-    
+   valMap.put((Bundle) val.getValuable(), val.getPrice());
   }
 
   @Override
   public void add(IValuable item, Double price) {
-    // TODO Auto-generated method stub
+   valMap.put((Bundle) item, price);
     
   }
 
   @Override
   public void clear() {
-    // TODO Auto-generated method stub
+    this.valMap = new HashMap<Bundle, Double>();
     
   }
 
   @Override
   public Boolean contains(IValuable item) {
-    // TODO Auto-generated method stub
-    return null;
+    return this.valMap.containsKey((Bundle) item);
   }
 
   @Override
   public IValuation getValuation(IValuable item) {
-    // TODO Auto-generated method stub
-    return null;
+    return new BundleValuation((Bundle) item, valMap.get(item));
   }
 
   @Override
   public Double getOrDefault(IValuable item, Double defVal) {
-    // TODO Auto-generated method stub
-    return null;
+    if(valMap.containsKey(item)) {
+      return valMap.get(item);
+    }
+    else {
+      return defVal;
+    }
   }
 
   @Override
   public Boolean isEmpty() {
-    // TODO Auto-generated method stub
-    return null;
+    return (valMap.isEmpty());
   }
 
   @Override
   public void addAll(Map<IValuable, Double> vals) {
-    // TODO Auto-generated method stub
-    
+    valMap.putAll((Map<? extends Bundle, ? extends Double>) vals);    
   }
 
   @Override
   public void addAll(IValuationSet vals) {
-    // TODO Auto-generated method stub
-    
+    for(IValuation v : (BundleValuationSet) vals) {
+      this.add(v);
+    }
   }
 
   @Override
   public void remove(IValuation val) {
-    // TODO Auto-generated method stub
-    
+    valMap.remove((Bundle) val.getValuable());  
   }
 
   @Override
   public void remove(IValuable item) {
-    // TODO Auto-generated method stub
+    valMap.remove((Bundle) item);
     
   }
 
   @Override
   public Integer size() {
-    // TODO Auto-generated method stub
-    return null;
+   return this.valMap.size();
   }
 
   @Override
   public IValuation[] toArray() {
-    // TODO Auto-generated method stub
-    return null;
+    BundleValuation[] valArray = new BundleValuation[this.size()];
+    int i = 0; 
+    for(Bundle Bundle : valMap.keySet()) {
+      valArray[i] = (BundleValuation) this.getValuation(Bundle);
+      i++;
+    }
+    return (BundleValuation[]) valArray;
   }
 
   @Override
   public Iterator<IValuation> iterator() {
-    // TODO Auto-generated method stub
-    return null;
+   ValuationIterator v = new ValuationIterator(this);
+    return v;
   }
   
 }

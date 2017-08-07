@@ -1,96 +1,119 @@
 package brown.valuation.library; 
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import brown.valuable.IValuable;
+import brown.valuable.library.Good;
 import brown.valuation.IValuation;
 import brown.valuation.IValuationSet;
 
-public class AdditiveValuationSet implements IValuationSet {
 
+public class AdditiveValuationSet implements IValuationSet, 
+Iterable<IValuation> {
+
+  private Map<Good, Double> valMap;
+  
+  public AdditiveValuationSet() {
+    this.valMap = new HashMap<Good, Double>();
+  }
+  
+  public AdditiveValuationSet(Map<Good, Double> aMap) {
+    this.valMap = aMap;
+  }
+  
+  public AdditiveValuationSet(AdditiveValuationSet a) {
+    this.valMap = new HashMap<Good, Double>(); 
+    this.addAll(a);
+  }
+  
   @Override
   public void add(IValuation val) {
-    // TODO Auto-generated method stub
-    
+   valMap.put((Good) val.getValuable(), val.getPrice());
   }
 
   @Override
   public void add(IValuable item, Double price) {
-    // TODO Auto-generated method stub
+   valMap.put((Good) item, price);
     
   }
 
   @Override
   public void clear() {
-    // TODO Auto-generated method stub
+    this.valMap = new HashMap<Good, Double>();
     
   }
 
   @Override
   public Boolean contains(IValuable item) {
-    // TODO Auto-generated method stub
-    return null;
+    return this.valMap.containsKey((Good) item);
   }
 
   @Override
   public IValuation getValuation(IValuable item) {
-    // TODO Auto-generated method stub
-    return null;
+    return new AdditiveValuation((Good) item, valMap.get(item));
   }
 
   @Override
   public Double getOrDefault(IValuable item, Double defVal) {
-    // TODO Auto-generated method stub
-    return null;
+    if(valMap.containsKey(item)) {
+      return valMap.get(item);
+    }
+    else {
+      return defVal;
+    }
   }
 
   @Override
   public Boolean isEmpty() {
-    // TODO Auto-generated method stub
-    return null;
+    return (valMap.isEmpty());
   }
 
   @Override
   public void addAll(Map<IValuable, Double> vals) {
-    // TODO Auto-generated method stub
-    
+    valMap.putAll((Map<? extends Good, ? extends Double>) vals);    
   }
 
   @Override
   public void addAll(IValuationSet vals) {
-    // TODO Auto-generated method stub
+    for(IValuation v : (AdditiveValuationSet) vals) {
+      this.add(v);
+    }
     
   }
 
   @Override
   public void remove(IValuation val) {
-    // TODO Auto-generated method stub
-    
+    valMap.remove((Good) val.getValuable());  
   }
 
   @Override
   public void remove(IValuable item) {
-    // TODO Auto-generated method stub
+    valMap.remove((Good) item);
     
   }
 
   @Override
   public Integer size() {
-    // TODO Auto-generated method stub
-    return null;
+   return this.valMap.size();
   }
 
   @Override
   public IValuation[] toArray() {
-    // TODO Auto-generated method stub
-    return null;
+    AdditiveValuation[] valArray = new AdditiveValuation[this.size()];
+    int i = 0; 
+    for(Good good : valMap.keySet()) {
+      valArray[i] = (AdditiveValuation) this.getValuation(good);
+      i++;
+    }
+    return (AdditiveValuation[]) valArray;
   }
 
   @Override
   public Iterator<IValuation> iterator() {
-    // TODO Auto-generated method stub
-    return null;
+   ValuationIterator v = new ValuationIterator(this);
+    return v;
   }
   
 }

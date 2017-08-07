@@ -1,5 +1,7 @@
 package brown.valuable.library;
 
+import brown.valuable.IValuable;
+
 
 /**
  * The good to be used in the back-end bidding logic. 
@@ -7,7 +9,7 @@ package brown.valuable.library;
  * @author acoggins
  *
  */
-public class Good {
+public class Good implements IValuable {
   
   public final Integer ID; 
   

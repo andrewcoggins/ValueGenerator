@@ -1,32 +1,42 @@
 package brown.valuation.library; 
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
+
 import brown.valuable.IValuable;
+import brown.valuable.library.Bundle;
 import brown.valuation.IValuation;
 
 public class BundleValuation implements IValuation {
 
+  private SimpleEntry<Bundle, Double> entry; 
+  
+  public BundleValuation(Bundle aBundle, Double price) {
+    this.entry = new SimpleEntry<Bundle, Double>(aBundle, price);
+  }
   @Override
   public IValuable getValuable() {
-    // TODO Auto-generated method stub
-    return null;
+    return (Bundle) this.entry.getKey();
   }
 
   @Override
   public Double getPrice() {
-    // TODO Auto-generated method stub
-    return null;
+    return this.entry.getValue();
   }
 
   @Override
-  public void setPrice() {
-    // TODO Auto-generated method stub
+  public void setPrice(Double newPrice) {
+   this.entry.setValue(newPrice);
     
   }
 
-  @Override
   public Boolean contains(IValuable val) {
-    // TODO Auto-generated method stub
-    return null;
+    Bundle b = (Bundle) this.getValuable();
+    return b.bundle.contains(val);
   }
   
+  public Integer size() {
+    Bundle b = (Bundle) this.getValuable();
+    return b.bundle.size();
+  }
 }

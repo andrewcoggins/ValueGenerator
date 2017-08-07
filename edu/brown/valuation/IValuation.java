@@ -13,8 +13,7 @@ public interface IValuation {
   
   public Double getPrice();
   
-  public void setPrice();
+  public void setPrice(Double newPrice);
   
-  public Boolean contains(IValuable val);
   
 }
