@@ -29,4 +29,36 @@ public class AdditiveValuation implements IValuation {
     entry.setValue(newPrice);
   }
 
+  @Override
+  public String toString() {
+    return "AdditiveValuation [entry=" + entry + "]";
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((entry == null) ? 0 : entry.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AdditiveValuation other = (AdditiveValuation) obj;
+    if (entry == null) {
+      if (other.entry != null)
+        return false;
+    } else if (!entry.equals(other.entry))
+      return false;
+    return true;
+  }
+  
+  
+
 }

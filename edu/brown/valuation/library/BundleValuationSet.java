@@ -70,11 +70,6 @@ Iterable<IValuation> {
   }
 
   @Override
-  public void addAll(Map<IValuable, Double> vals) {
-    valMap.putAll((Map<? extends Bundle, ? extends Double>) vals);    
-  }
-
-  @Override
   public void addAll(IValuationSet vals) {
     for(IValuation v : (BundleValuationSet) vals) {
       this.add(v);
@@ -113,5 +108,36 @@ Iterable<IValuation> {
    ValuationIterator v = new ValuationIterator(this);
     return v;
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((valMap == null) ? 0 : valMap.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    BundleValuationSet other = (BundleValuationSet) obj;
+    if (valMap == null) {
+      if (other.valMap != null)
+        return false;
+    } else if (!valMap.equals(other.valMap))
+      return false;
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "BundleValuationSet [valMap=" + valMap + "]";
+  }
+  
   
 }

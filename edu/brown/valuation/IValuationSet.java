@@ -21,8 +21,6 @@ public interface IValuationSet {
   
   public Boolean isEmpty();
   
-  public void addAll(Map<IValuable, Double> vals);
-  
   public void addAll(IValuationSet vals);
   
   public void remove(IValuation val);
