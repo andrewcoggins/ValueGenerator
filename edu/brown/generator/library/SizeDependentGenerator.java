@@ -1,6 +1,7 @@
 package brown.generator.library;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 
@@ -59,16 +60,22 @@ public class SizeDependentGenerator implements IGenerator {
         for(IValuation e : existingSets) {
           BundleValuation eBundle = (BundleValuation) e;
           if (!eBundle.contains(good)) {
+            System.out.println(good);
             //create a copy set of goods, and add the new good to it.
             Bundle goods = (Bundle) eBundle.getValuable();
-            Bundle eCopy = new Bundle(goods.bundle); 
+            System.out.println(goods);
+            Bundle eCopy = new Bundle(new HashSet<Good>(goods.bundle)); 
+            System.out.println(eCopy);
             eCopy.bundle.add(good);
+            System.out.println(goods);
+            System.out.println(eCopy);
             //add it to temp with a price determined by the value function.
             temp.add(eCopy, valFunction.apply(eCopy.bundle.size()) * valueScale);
           }
         }
         //add temp to existing sets
         existingSets.addAll(temp);
+        System.out.println(existingSets);
       }
     return existingSets;
   }
