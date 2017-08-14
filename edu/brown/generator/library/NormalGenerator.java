@@ -1,6 +1,7 @@
 package brown.generator.library; 
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList; 
 import java.util.Map;
@@ -120,7 +121,10 @@ public class NormalGenerator implements IGenerator {
               NormalDistribution bundleDist = new NormalDistribution(rng, bundleMean,
                   totalVariance * valueScale);
               if (!isMonotonic) {
-                temp.put(eCopy, bundleDist.sample());
+                Double bundleValue = -0.1;
+                while(bundleValue < 0)
+                  bundleValue = bundleDist.sample();
+                temp.put(eCopy, bundleValue);
               }
               else {
                 //apply monotonic constraints. 
@@ -151,7 +155,8 @@ public class NormalGenerator implements IGenerator {
     //move the existing sets from an ID based to the structure in the type signature. 
     IValuationSet existingSets = new BundleValuationSet();
     for(Map<Integer, Good> idGood : existingSetsID.keySet()) {
-     Bundle goodsToReturn = new Bundle((Set<Good>) idGood.values());
+      Set<Good> goodsSet = new HashSet<Good>(idGood.values());
+     Bundle goodsToReturn = new Bundle(goodsSet);
       existingSets.add(goodsToReturn, existingSetsID.get(idGood));
     }
     return (BundleValuationSet) existingSets;
@@ -186,8 +191,7 @@ public class NormalGenerator implements IGenerator {
               goodsSet.bundle.add(aGood);
               goodList.remove(aGood);
             }
-            Bundle goodsSetBundle = new Bundle(goodsSet.bundle);
-            if(!valuations.contains(goodsSetBundle)) {
+            if(!valuations.contains(goodsSet)) {
               reSample = false;
               Double variance = 0.0;
               for(Integer id : theGoods.keySet()) {
@@ -201,16 +205,23 @@ public class NormalGenerator implements IGenerator {
               if(!isMonotonic) {
                 valuations.add(new BundleValuation(new Bundle(goodsSet.bundle), bundleDist.sample()));
               }
+              //if not monotonic, make sure that the added bundle's value is greater than
+              // all subsets and less than all supersets.
               else {
                 Double minimumPrice = 0.0;
+                Double maximumPrice = Double.MAX_VALUE;
                 for(IValuation v : valuations) {
-                if(isSubset((Bundle) v.getValuable(), new Bundle(goodsSet.bundle)) &&
+                if(goodsSet.bundle.containsAll(((Bundle) v.getValuable()).bundle) &&
                     v.getPrice() > minimumPrice) {
                     minimumPrice = v.getPrice();
                   }
+                if (((Bundle) v.getValuable()).bundle.containsAll(goodsSet.bundle)
+                    && v.getPrice() < maximumPrice) {
+                  maximumPrice = v.getPrice();
+                }
                 }
                 Double bundlePrice = -0.1;
-                while(bundlePrice < minimumPrice) {
+                while(bundlePrice < minimumPrice && bundlePrice > maximumPrice) {
                   bundlePrice = bundleDist.sample();
                 }
                 valuations.add(new BundleValuation(new Bundle(goodsSet.bundle), bundlePrice));
@@ -316,23 +327,7 @@ public class NormalGenerator implements IGenerator {
     
     //give each good an ID
     
-    /**
-     * Helper function, determines is the first set is a subset of the second.
-     * @param firstSet
-     * the first set for which we determine if it is a subset of the second
-     * @param secondSet
-     * the set that the first is being compared against. 
-     * @return
-     * whether or not the first set is a subset of the second.
-     */
-    private Boolean isSubset(Bundle firstSet, Bundle secondSet) {
-      for(Good f : firstSet.bundle) {
-        if(!secondSet.bundle.contains(f)) {
-          return false;
-        }
-      }
-      return true;
-    }
+
 
 
   
