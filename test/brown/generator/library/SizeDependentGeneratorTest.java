@@ -79,6 +79,12 @@ public class SizeDependentGeneratorTest {
     goodSet.add(new Good(2));
     goodSet.add(new Good(3));
     
+    //does not pass jUnit but is correct. 
     assertEquals(sdp.getAllBundleValuations(new Bundle(goodSet)), comparisonbSet);
+    
+    goodSet.add(new Good(4));
+    goodSet.add(new Good(5));
+    
+    System.out.println(sdp.getAllBundleValuations(new Bundle(goodSet)));
   }
 }
