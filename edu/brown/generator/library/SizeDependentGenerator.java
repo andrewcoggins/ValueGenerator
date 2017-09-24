@@ -3,13 +3,14 @@ package brown.generator.library;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 import org.apache.commons.math3.random.ISAACRandom;
 
-import brown.generator.IGenerator;
+import brown.generator.IValuationGenerator;
 import brown.valuable.library.Bundle;
 import brown.valuable.library.Good;
 import brown.valuation.IValuation;
@@ -18,7 +19,7 @@ import brown.valuation.library.AdditiveValuationSet;
 import brown.valuation.library.BundleValuation;
 import brown.valuation.library.BundleValuationSet;
 
-public class SizeDependentGenerator implements IGenerator {
+public class SizeDependentGenerator implements IValuationGenerator {
 
   private Function<Integer, Double> valFunction; 
   private Double valueScale;
@@ -29,9 +30,13 @@ public class SizeDependentGenerator implements IGenerator {
   }
   
   @Override
-  public AdditiveValuation getSingleValuation(Good aGood) {
-   Double value = valFunction.apply(1);
-   return new AdditiveValuation(aGood, value);
+  public double makeValuation(Good aGood) {
+   return valFunction.apply(1);
+  }
+  
+  @Override
+  public double makeValuation(Set<Good> aGood) {
+   return valFunction.apply(aGood.size());
   }
   
   @Override

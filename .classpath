@@ -12,6 +12,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/specvalProject.jar"/>
+	<classpathentry kind="lib" path="/TradingPlatform/lib/SpecValGenerator.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -13,154 +13,140 @@ import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 import org.apache.commons.math3.random.ISAACRandom;
 import org.apache.commons.math3.random.RandomGenerator;
 
-import brown.generator.IGenerator;
-import brown.valuable.library.Bundle;
+import brown.generator.IValuationGenerator;
 import brown.valuable.library.Good;
 import brown.valuation.IValuation;
-import brown.valuation.IValuationSet;
 import brown.valuation.library.AdditiveValuation;
-import brown.valuation.library.AdditiveValuationSet;
 import brown.valuation.library.BundleValuation;
-import brown.valuation.library.BundleValuationSet;
 
-public class NormalGenerator implements IGenerator {
+public class NormalGenerator implements IValuationGenerator {
 
   private Function<Integer, Double> valFunction; 
   private Double baseVariance; 
-  private Double expectedCovariance;
-  private Boolean isMonotonic; 
+  private Double expectedCovariance; 
   private Double valueScale;
   private Double varCoVar[][];
 
   
-  public NormalGenerator (Function<Integer, Double> valFunction, 
-      Boolean isMonotonic, Double valueScale) {
+  public NormalGenerator (Function<Integer, Double> valFunction, Double valueScale) {
    this.valFunction = valFunction; 
    this.baseVariance = 1.0;
    this.expectedCovariance = 0.0;
-   this.isMonotonic = isMonotonic; 
    this.valueScale = valueScale; 
  }
   
   public NormalGenerator (Function<Integer, Double> valFunction, 
-      Double baseVariance, Double expectedCovariance, Boolean isMonotonic, 
+      Double baseVariance, Double expectedCovariance, 
       Double valueScale) {
     this.valFunction = valFunction; 
     this.expectedCovariance = expectedCovariance; 
     this.baseVariance = baseVariance; 
-    this.isMonotonic = isMonotonic; 
     this.valueScale = valueScale; 
   }
  
   @Override
-  public AdditiveValuation getSingleValuation(Good aGood) {
+  public double makeValuation(Good good) {
    RandomGenerator rng = new ISAACRandom();
    Double meanValue = valFunction.apply(1);
    NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
    Double actualValue = -1.0;
    while (actualValue < 0)
      actualValue = normalDist.sample();
-   return new AdditiveValuation(aGood, actualValue);
+   return actualValue;
+  }
+  
+  @Override
+  public double makeValuation(Set<Good> goods) {
+   RandomGenerator rng = new ISAACRandom();
+   Double meanValue = valFunction.apply(goods.size());
+   NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
+   Double actualValue = -1.0;
+   while (actualValue < 0)
+     actualValue = normalDist.sample();
+   return actualValue;
   }
 
-  @Override
-  public AdditiveValuationSet getAdditiveValuation(Bundle bundle) {
-    RandomGenerator rng = new ISAACRandom();
-    AdditiveValuationSet returnSet = new AdditiveValuationSet(); 
-    Double meanValue = valFunction.apply(1);
-    NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
-    for(Good g : bundle.bundle) {
-      Double actualValue = -1.0;
-      while(actualValue < 0.0) {
-      actualValue = normalDist.sample();
-      }
-      AdditiveValuation a = new AdditiveValuation(g, actualValue);
-      returnSet.add(a);
-    }
-    return returnSet;
-  }
-
-  @Override
-  public BundleValuationSet getAllBundleValuations(Bundle bundle) {
-    populateVarCoVarMatrix(bundle);
-    //random generator for all distributions in this method
-    RandomGenerator rng = new ISAACRandom();
-    Map<Map<Integer, Good>, Double> existingSetsID =
-        new HashMap<Map<Integer, Good>, Double>();
-    //map to cater to necessary iteration structure for monotonicity
-    Map<Map<Integer, Good>, Double> previousSize =
-        new HashMap<Map<Integer, Good>, Double>();
-    Map<Integer, Good> numberGoods = new HashMap<Integer, Good>();
-    int count = 0; 
-    for (Good good : bundle.bundle) {
-      numberGoods.put(count, good);
-      count++;
-    }
-    //give maps starting values
-    existingSetsID.put(new HashMap<Integer, Good>(), 0.0);
-    previousSize.put(new HashMap<Integer, Good>(), 0.0);
-    for(int i = 0; i < numberGoods.size(); i++) {
-      //hashmap populated with every subset of size i;
-      Map<Map<Integer, Good>, Double> temp =
-          new HashMap<Map<Integer, Good>, Double>();
-      //for each good in the previous size subset
-      for(Map<Integer, Good> e : previousSize.keySet()) {
-          //for each good, create a new bundle, as 
-          for(Integer id : numberGoods.keySet()){
-            Map<Integer, Good> eCopy = new HashMap<Integer, Good>(e);
-            if(!e.keySet().contains(id)) {
-              eCopy.put(id, numberGoods.get(id));
-              if (!temp.containsKey(eCopy)) {
-              Double totalVariance = 0.0; 
-              for(int anId : eCopy.keySet()) {
-                for(int secondId : eCopy.keySet()) {
-                  totalVariance += varCoVar[anId][secondId];
-                }
-              }
-              Double bundleMean = valFunction.apply(eCopy.size()) * valueScale; 
-              NormalDistribution bundleDist = new NormalDistribution(rng, bundleMean,
-                  totalVariance * valueScale);
-              if (!isMonotonic) {
-                Double bundleValue = -0.1;
-                while(bundleValue < 0)
-                  bundleValue = bundleDist.sample();
-                temp.put(eCopy, bundleValue);
-              }
-              else {
-                //apply monotonic constraints. 
-                Double highestValSubSet = 0.0;
-                for(Integer anId : eCopy.keySet()) {
-                  Map<Integer, Good> eCopyCopy = 
-                      new HashMap<Integer, Good>(eCopy);
-                  eCopyCopy.remove(anId);
-                  if(existingSetsID.containsKey(eCopyCopy)) {
-                    if(existingSetsID.get(eCopyCopy) > highestValSubSet) {
-                      highestValSubSet = existingSetsID.get(eCopyCopy);
-                    }
-                  }
-                }
-                Double sampledValue = -0.1;
-                while (sampledValue < highestValSubSet) {
-                  sampledValue = bundleDist.sample();
-                }
-                temp.put(eCopy, sampledValue);
-              }
-            }
-            }
-          }
-        }
-      existingSetsID.putAll(temp);
-      previousSize = temp;
-    }
-    //move the existing sets from an ID based to the structure in the type signature. 
-    IValuationSet existingSets = new BundleValuationSet();
-    for(Map<Integer, Good> idGood : existingSetsID.keySet()) {
-      Set<Good> goodsSet = new HashSet<Good>(idGood.values());
-     Bundle goodsToReturn = new Bundle(goodsSet);
-      existingSets.add(goodsToReturn, existingSetsID.get(idGood));
-    }
-    return (BundleValuationSet) existingSets;
-  }
+//  @Override
+//  public BundleValuationSet getAllBundleValuations(Bundle bundle) {
+//    populateVarCoVarMatrix(bundle);
+//    //random generator for all distributions in this method
+//    RandomGenerator rng = new ISAACRandom();
+//    Map<Map<Integer, Good>, Double> existingSetsID =
+//        new HashMap<Map<Integer, Good>, Double>();
+//    //map to cater to necessary iteration structure for monotonicity
+//    Map<Map<Integer, Good>, Double> previousSize =
+//        new HashMap<Map<Integer, Good>, Double>();
+//    Map<Integer, Good> numberGoods = new HashMap<Integer, Good>();
+//    int count = 0; 
+//    for (Good good : bundle.bundle) {
+//      numberGoods.put(count, good);
+//      count++;
+//    }
+//    //give maps starting values
+//    existingSetsID.put(new HashMap<Integer, Good>(), 0.0);
+//    previousSize.put(new HashMap<Integer, Good>(), 0.0);
+//    for(int i = 0; i < numberGoods.size(); i++) {
+//      //hashmap populated with every subset of size i;
+//      Map<Map<Integer, Good>, Double> temp =
+//          new HashMap<Map<Integer, Good>, Double>();
+//      //for each good in the previous size subset
+//      for(Map<Integer, Good> e : previousSize.keySet()) {
+//          //for each good, create a new bundle, as 
+//          for(Integer id : numberGoods.keySet()){
+//            Map<Integer, Good> eCopy = new HashMap<Integer, Good>(e);
+//            if(!e.keySet().contains(id)) {
+//              eCopy.put(id, numberGoods.get(id));
+//              if (!temp.containsKey(eCopy)) {
+//              Double totalVariance = 0.0; 
+//              for(int anId : eCopy.keySet()) {
+//                for(int secondId : eCopy.keySet()) {
+//                  totalVariance += varCoVar[anId][secondId];
+//                }
+//              }
+//              Double bundleMean = valFunction.apply(eCopy.size()) * valueScale; 
+//              NormalDistribution bundleDist = new NormalDistribution(rng, bundleMean,
+//                  totalVariance * valueScale);
+//              if (!isMonotonic) {
+//                Double bundleValue = -0.1;
+//                while(bundleValue < 0)
+//                  bundleValue = bundleDist.sample();
+//                temp.put(eCopy, bundleValue);
+//              }
+//              else {
+//                //apply monotonic constraints. 
+//                Double highestValSubSet = 0.0;
+//                for(Integer anId : eCopy.keySet()) {
+//                  Map<Integer, Good> eCopyCopy = 
+//                      new HashMap<Integer, Good>(eCopy);
+//                  eCopyCopy.remove(anId);
+//                  if(existingSetsID.containsKey(eCopyCopy)) {
+//                    if(existingSetsID.get(eCopyCopy) > highestValSubSet) {
+//                      highestValSubSet = existingSetsID.get(eCopyCopy);
+//                    }
+//                  }
+//                }
+//                Double sampledValue = -0.1;
+//                while (sampledValue < highestValSubSet) {
+//                  sampledValue = bundleDist.sample();
+//                }
+//                temp.put(eCopy, sampledValue);
+//              }
+//            }
+//            }
+//          }
+//        }
+//      existingSetsID.putAll(temp);
+//      previousSize = temp;
+//    }
+//    //move the existing sets from an ID based to the structure in the type signature. 
+//    IValuationSet existingSets = new BundleValuationSet();
+//    for(Map<Integer, Good> idGood : existingSetsID.keySet()) {
+//      Set<Good> goodsSet = new HashSet<Good>(idGood.values());
+//     Bundle goodsToReturn = new Bundle(goodsSet);
+//      existingSets.add(goodsToReturn, existingSetsID.get(idGood));
+//    }
+//    return (BundleValuationSet) existingSets;
+//  }
 
   @Override
   public BundleValuationSet getSomeBundleValuations(Bundle bundle,
@@ -246,16 +232,15 @@ public class NormalGenerator implements IGenerator {
      * Helper function for populating the variance covariance matrix
      * for the above methods
      */
-    private void populateVarCoVarMatrix(Bundle aBundle) {
+    private void populateVarCoVarMatrix(Integer size) {
       //distribution to draw covariance observations. Currently included a default value
       //to assure positive semidefiniance but hoping to later change this with a method 
       //that assures positive semidefinance as defined by Sylvester's Criterion.
       NormalDistribution varianceDist = new NormalDistribution(new ISAACRandom(),
       expectedCovariance, 0.1);
-      Set<Good> goods = aBundle.bundle;
-     varCoVar = new Double[goods.size()][goods.size()];
-      for(int i = 0; i < goods.size(); i++) {
-        for(int j = i; j < goods.size(); j++) {
+     varCoVar = new Double[size][size];
+      for(int i = 0; i < size; i++) {
+        for(int j = i; j < size; j++) {
           if (i == j) {
             varCoVar[i][j] = baseVariance; 
           }

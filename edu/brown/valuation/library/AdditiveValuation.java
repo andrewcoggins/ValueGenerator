@@ -1,64 +1,60 @@
 package brown.valuation.library; 
 
-import java.util.AbstractMap.SimpleEntry;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
+import brown.generator.IValuationGenerator;
+import brown.generator.library.ValRandGenerator;
 import brown.valuable.IValuable;
 import brown.valuable.library.Good;
-import brown.valuation.IValuation;
+import brown.valuation.IIndependentValuation;
 
-public class AdditiveValuation implements IValuation {
+/**
+ * A Valuation where the values of each good are independent.
+ * @author andrew
+ *
+ */
+public class AdditiveValuation implements IIndependentValuation {
 
-  private SimpleEntry<Good, Double> entry; 
+  private Map<Good, Double> valMap;
   
-  public AdditiveValuation(Good aGood, Double value) {
-    this.entry = new SimpleEntry<Good, Double>(aGood, value);
-  }
-  
-  @Override
-  public IValuable getValuable() {
-    return (Good) this.entry.getKey();
-  }
-
-  @Override
-  public Double getPrice() {
-    return this.entry.getValue();
-  }
-
-  @Override
-  public void setPrice(Double newPrice) {
-    entry.setValue(newPrice);
-  }
-
-  @Override
-  public String toString() {
-    return "AdditiveValuation [entry=" + entry + "]";
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((entry == null) ? 0 : entry.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    AdditiveValuation other = (AdditiveValuation) obj;
-    if (entry == null) {
-      if (other.entry != null)
-        return false;
-    } else if (!entry.equals(other.entry))
-      return false;
-    return true;
+  /**
+   * default constructor.
+   * @param goods
+   */
+  public AdditiveValuation(Set<Good> goods) {
+    ValRandGenerator rg = new ValRandGenerator();
+    for(Good item : goods) {
+      valMap.put(item, rg.makeValuation(item));
+    }
   }
   
+  /**
+   * constructor with an input IValuationGenerator and its associated parameters.
+   * @param valGenerator
+   * @param goods
+   */
+  public AdditiveValuation(IValuationGenerator valGenerator, Set<Good> goods) {
+    this.valMap = new HashMap<Good, Double>();
+    for(Good item : goods) {
+      double value = valGenerator.makeValuation(item);
+      valMap.put(item, value);
+    }
+  }
   
+  @Override
+  public Double getValuation(Good good) {
+    return valMap.get(good);
+  }
 
+  @Override
+  public Map<Good, Double> getValuation(Set<Good> goods) {
+    Map<Good, Double> valuation = new HashMap<Good, Double>();
+    for(IValuable item : goods) {
+      valuation.put((Good) item, valMap.get(item));
+    }
+    return valuation; 
+  }
+  
 }
