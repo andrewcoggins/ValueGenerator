@@ -9,14 +9,14 @@ import brown.valuable.IValuable;
  * @author acoggins
  *
  */
-public class Good implements IValuable {
+public class Tradeable implements IValuable {
   
   public final Integer ID; 
   
   /**
    * empty constructor.
    */
-  public Good() {
+  public Tradeable() {
     this.ID = null; 
   }
   
@@ -24,7 +24,7 @@ public class Good implements IValuable {
    * constructor with ID.
    * @param id
    */
-  public Good(Integer id) {
+  public Tradeable(Integer id) {
     this.ID = id; 
   }
   
@@ -45,7 +45,7 @@ public class Good implements IValuable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Good other = (Good) obj;
+    Tradeable other = (Tradeable) obj;
     if (ID == null) {
       if (other.ID != null)
         return false;

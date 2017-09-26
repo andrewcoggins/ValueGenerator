@@ -7,7 +7,7 @@ import java.util.Set;
 import brown.generator.IValuationGenerator;
 import brown.generator.library.ValRandGenerator;
 import brown.valuable.IValuable;
-import brown.valuable.library.Good;
+import brown.valuable.library.Tradeable;
 import brown.valuation.IIndependentValuation;
 
 /**
@@ -17,15 +17,15 @@ import brown.valuation.IIndependentValuation;
  */
 public class AdditiveValuation implements IIndependentValuation {
 
-  private Map<Good, Double> valMap;
+  private Map<Tradeable, Double> valMap;
   
   /**
    * default constructor.
    * @param goods
    */
-  public AdditiveValuation(Set<Good> goods) {
+  public AdditiveValuation(Set<Tradeable> goods) {
     ValRandGenerator rg = new ValRandGenerator();
-    for(Good item : goods) {
+    for(Tradeable item : goods) {
       valMap.put(item, rg.makeValuation(item));
     }
   }
@@ -35,24 +35,24 @@ public class AdditiveValuation implements IIndependentValuation {
    * @param valGenerator
    * @param goods
    */
-  public AdditiveValuation(IValuationGenerator valGenerator, Set<Good> goods) {
-    this.valMap = new HashMap<Good, Double>();
-    for(Good item : goods) {
+  public AdditiveValuation(IValuationGenerator valGenerator, Set<Tradeable> goods) {
+    this.valMap = new HashMap<Tradeable, Double>();
+    for(Tradeable item : goods) {
       double value = valGenerator.makeValuation(item);
       valMap.put(item, value);
     }
   }
   
   @Override
-  public Double getValuation(Good good) {
+  public Double getValuation(Tradeable good) {
     return valMap.get(good);
   }
 
   @Override
-  public Map<Good, Double> getValuation(Set<Good> goods) {
-    Map<Good, Double> valuation = new HashMap<Good, Double>();
+  public Map<Tradeable, Double> getValuation(Set<Tradeable> goods) {
+    Map<Tradeable, Double> valuation = new HashMap<Tradeable, Double>();
     for(IValuable item : goods) {
-      valuation.put((Good) item, valMap.get(item));
+      valuation.put((Tradeable) item, valMap.get(item));
     }
     return valuation; 
   }

@@ -18,16 +18,16 @@ public class BundleTest {
   public void testBundle() {
     Bundle testBundle = new Bundle();
     Bundle testBundleA = new Bundle();
-    Set<Good> goodSet = new HashSet<Good>();
+    Set<Tradeable> goodSet = new HashSet<Tradeable>();
     for(int i = 0; i < 10; i++) {
-      goodSet.add(new Good(i));
+      goodSet.add(new Tradeable(i));
     }
     Bundle testBundleTwo = new Bundle(goodSet);
     Bundle testBundleTwoA = new Bundle(goodSet);
     
     assertEquals(testBundle, testBundleA);
     assertEquals(testBundleTwo, testBundleTwoA);
-    assertEquals(testBundle.bundle, new HashSet<Good>());
+    assertEquals(testBundle.bundle, new HashSet<Tradeable>());
     assertEquals(testBundleTwo.bundle, goodSet);
   }
 }

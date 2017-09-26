@@ -1,23 +1,14 @@
 package brown.generator.library; 
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList; 
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
-import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 import org.apache.commons.math3.random.ISAACRandom;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import brown.generator.IValuationGenerator;
-import brown.valuable.library.Good;
-import brown.valuation.IValuation;
-import brown.valuation.library.AdditiveValuation;
-import brown.valuation.library.BundleValuation;
+import brown.valuable.library.Tradeable;
 
 public class NormalGenerator implements IValuationGenerator {
 
@@ -45,7 +36,7 @@ public class NormalGenerator implements IValuationGenerator {
   }
  
   @Override
-  public double makeValuation(Good good) {
+  public double makeValuation(Tradeable good) {
    RandomGenerator rng = new ISAACRandom();
    Double meanValue = valFunction.apply(1);
    NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
@@ -56,7 +47,7 @@ public class NormalGenerator implements IValuationGenerator {
   }
   
   @Override
-  public double makeValuation(Set<Good> goods) {
+  public double makeValuation(Set<Tradeable> goods) {
    RandomGenerator rng = new ISAACRandom();
    Double meanValue = valFunction.apply(goods.size());
    NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
@@ -148,82 +139,82 @@ public class NormalGenerator implements IValuationGenerator {
 //    return (BundleValuationSet) existingSets;
 //  }
 
-  @Override
-  public BundleValuationSet getSomeBundleValuations(Bundle bundle,
-      Integer numberOfValuations, Integer bundleSizeMean,
-      Double bundleSizeStdDev) { 
-    if (bundleSizeMean > 0 && bundleSizeStdDev > 0) {
-      populateVarCoVarMatrix(bundle);
-      RandomGenerator rng = new ISAACRandom();
-      NormalDistribution sizeDist = new NormalDistribution(rng, bundleSizeMean, 
-          bundleSizeStdDev);
-    BundleValuationSet valuations = new BundleValuationSet();
-    for(int i = 0; i < numberOfValuations; i++) {
-        Boolean reSample = true;
-        while(reSample) {
-          int size = -1; 
-          //repeatedly sample bundle size until a valid size is picked.
-          while (size < 1 || size > bundle.bundle.size()) {
-            size = (int) sizeDist.sample();}
-          Map<Integer, Good> theGoods = new HashMap<>();
-         Bundle goodsSet = new Bundle();
-          //list of goods to uniformly sample from
-            List<Good> goodList = new ArrayList<Good>(bundle.bundle); 
-            //sample without replacement goods to add to the bundle size times.
-            for(int j = 0; j < size; j++) {
-              Integer rand = (int) (Math.random() * goodList.size());
-              Good aGood = goodList.get(rand);
-              theGoods.put(rand, aGood);
-              goodsSet.bundle.add(aGood);
-              goodList.remove(aGood);
-            }
-            if(!valuations.contains(goodsSet)) {
-              reSample = false;
-              Double variance = 0.0;
-              for(Integer id : theGoods.keySet()) {
-                for(Integer idTwo : theGoods.keySet()) {
-                  variance += varCoVar[id][idTwo];
-                }
-              }
-              NormalDistribution bundleDist = new NormalDistribution(rng,
-                  valFunction.apply(theGoods.size()) * valueScale, 
-                  variance * valueScale);
-              if(!isMonotonic) {
-                valuations.add(new BundleValuation(new Bundle(goodsSet.bundle), bundleDist.sample()));
-              }
-              //if not monotonic, make sure that the added bundle's value is greater than
-              // all subsets and less than all supersets.
-              else {
-                Double minimumPrice = 0.0;
-                Double maximumPrice = Double.MAX_VALUE;
-                for(IValuation v : valuations) {
-                if(goodsSet.bundle.containsAll(((Bundle) v.getValuable()).bundle) &&
-                    v.getPrice() > minimumPrice) {
-                    minimumPrice = v.getPrice();
-                  }
-                if (((Bundle) v.getValuable()).bundle.containsAll(goodsSet.bundle)
-                    && v.getPrice() < maximumPrice) {
-                  maximumPrice = v.getPrice();
-                }
-                }
-                Double bundlePrice = -0.1;
-                while(bundlePrice < minimumPrice && bundlePrice > maximumPrice) {
-                  bundlePrice = bundleDist.sample();
-                }
-                valuations.add(new BundleValuation(new Bundle(goodsSet.bundle), bundlePrice));
-              }
-            }  
-          }
-        }
-    return valuations; 
-  }
-  else {
-    System.out.println("ERROR: bundle size parameters not positive");
-    throw new NotStrictlyPositiveException(bundleSizeMean);
-  }
-  }
-  
-    
+//  @Override
+//  public BundleValuationSet getSomeBundleValuations(Bundle bundle,
+//      Integer numberOfValuations, Integer bundleSizeMean,
+//      Double bundleSizeStdDev) { 
+//    if (bundleSizeMean > 0 && bundleSizeStdDev > 0) {
+//      populateVarCoVarMatrix(bundle);
+//      RandomGenerator rng = new ISAACRandom();
+//      NormalDistribution sizeDist = new NormalDistribution(rng, bundleSizeMean, 
+//          bundleSizeStdDev);
+//    BundleValuationSet valuations = new BundleValuationSet();
+//    for(int i = 0; i < numberOfValuations; i++) {
+//        Boolean reSample = true;
+//        while(reSample) {
+//          int size = -1; 
+//          //repeatedly sample bundle size until a valid size is picked.
+//          while (size < 1 || size > bundle.bundle.size()) {
+//            size = (int) sizeDist.sample();}
+//          Map<Integer, Good> theGoods = new HashMap<>();
+//         Bundle goodsSet = new Bundle();
+//          //list of goods to uniformly sample from
+//            List<Good> goodList = new ArrayList<Good>(bundle.bundle); 
+//            //sample without replacement goods to add to the bundle size times.
+//            for(int j = 0; j < size; j++) {
+//              Integer rand = (int) (Math.random() * goodList.size());
+//              Good aGood = goodList.get(rand);
+//              theGoods.put(rand, aGood);
+//              goodsSet.bundle.add(aGood);
+//              goodList.remove(aGood);
+//            }
+//            if(!valuations.contains(goodsSet)) {
+//              reSample = false;
+//              Double variance = 0.0;
+//              for(Integer id : theGoods.keySet()) {
+//                for(Integer idTwo : theGoods.keySet()) {
+//                  variance += varCoVar[id][idTwo];
+//                }
+//              }
+//              NormalDistribution bundleDist = new NormalDistribution(rng,
+//                  valFunction.apply(theGoods.size()) * valueScale, 
+//                  variance * valueScale);
+//              if(!isMonotonic) {
+//                valuations.add(new BundleValuation(new Bundle(goodsSet.bundle), bundleDist.sample()));
+//              }
+//              //if not monotonic, make sure that the added bundle's value is greater than
+//              // all subsets and less than all supersets.
+//              else {
+//                Double minimumPrice = 0.0;
+//                Double maximumPrice = Double.MAX_VALUE;
+//                for(IValuation v : valuations) {
+//                if(goodsSet.bundle.containsAll(((Bundle) v.getValuable()).bundle) &&
+//                    v.getPrice() > minimumPrice) {
+//                    minimumPrice = v.getPrice();
+//                  }
+//                if (((Bundle) v.getValuable()).bundle.containsAll(goodsSet.bundle)
+//                    && v.getPrice() < maximumPrice) {
+//                  maximumPrice = v.getPrice();
+//                }
+//                }
+//                Double bundlePrice = -0.1;
+//                while(bundlePrice < minimumPrice && bundlePrice > maximumPrice) {
+//                  bundlePrice = bundleDist.sample();
+//                }
+//                valuations.add(new BundleValuation(new Bundle(goodsSet.bundle), bundlePrice));
+//              }
+//            }  
+//          }
+//        }
+//    return valuations; 
+//  }
+//  else {
+//    System.out.println("ERROR: bundle size parameters not positive");
+//    throw new NotStrictlyPositiveException(bundleSizeMean);
+//  }
+//  }
+//  
+//    
 
     
     

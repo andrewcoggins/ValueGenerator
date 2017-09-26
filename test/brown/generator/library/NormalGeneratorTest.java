@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 
 import brown.valuable.library.Bundle;
-import brown.valuable.library.Good;
+import brown.valuable.library.Tradeable;
 import brown.valuation.IValuation;
 import brown.valuation.library.BundleValuation;
 import brown.valuation.library.BundleValuationSet;
@@ -27,13 +27,13 @@ public class NormalGeneratorTest {
     
     NormalGenerator ng = new NormalGenerator(basicFunction, false, 1.0);
     
-    Good aGood = new Good(0);
+    Tradeable aGood = new Tradeable(0);
     for(int i = 0; i < ITERATIONS; i++)
     System.out.println(ng.getSingleValuation(aGood));
     
-    Set<Good> goodSet = new HashSet<Good>();
+    Set<Tradeable> goodSet = new HashSet<Tradeable>();
     for(int i = 0; i < GOODS; i++)
-      goodSet.add(new Good(i));
+      goodSet.add(new Tradeable(i));
     Bundle goodBundle = new Bundle(goodSet);
     System.out.print('\n');
     System.out.println(ng.getAdditiveValuation(goodBundle));
@@ -50,9 +50,9 @@ public class NormalGeneratorTest {
     Function<Integer, Double> basicFunction = x -> (double) x; 
     NormalGenerator ng = new NormalGenerator(basicFunction, 2.0, 0.0, true, 1.0);
     
-    Set<Good> goodSet = new HashSet<Good>();
+    Set<Tradeable> goodSet = new HashSet<Tradeable>();
     for(int i = 0; i < GOODSTWO; i++)
-      goodSet.add(new Good(i));
+      goodSet.add(new Tradeable(i));
     Bundle goodBundle = new Bundle(goodSet);
     for(int i = 0; i < 15; i++) {
       BundleValuationSet b = ng.getAllBundleValuations(goodBundle);
@@ -77,9 +77,9 @@ public class NormalGeneratorTest {
   public void testNormalGeneratorThree() {
     Function<Integer, Double> basicFunction = x -> (double) x; 
     NormalGenerator ng = new NormalGenerator(basicFunction, 2.0, 0.0, true, 1.0);
-    Set<Good> goodSet = new HashSet<Good>();
+    Set<Tradeable> goodSet = new HashSet<Tradeable>();
     for(int i = 0; i < GOODSTHREE; i++)
-      goodSet.add(new Good(i));
+      goodSet.add(new Tradeable(i));
     Bundle goodBundle = new Bundle(goodSet);
     for(int i = 0; i < 40; i++) {
       BundleValuationSet b = ng.getSomeBundleValuations(goodBundle, 7, 3, 1.0);
