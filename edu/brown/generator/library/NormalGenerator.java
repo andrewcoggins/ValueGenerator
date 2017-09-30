@@ -9,6 +9,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 
 import brown.generator.IValuationGenerator;
 import brown.valuable.library.Tradeable;
+import brown.valuable.library.Value;
 
 public class NormalGenerator implements IValuationGenerator {
 
@@ -36,25 +37,25 @@ public class NormalGenerator implements IValuationGenerator {
   }
  
   @Override
-  public double makeValuation(Tradeable good) {
+  public Value makeValuation(Tradeable good) {
    RandomGenerator rng = new ISAACRandom();
    Double meanValue = valFunction.apply(1);
    NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
    Double actualValue = -1.0;
    while (actualValue < 0)
      actualValue = normalDist.sample();
-   return actualValue;
+   return new Value(actualValue);
   }
   
   @Override
-  public double makeValuation(Set<Tradeable> goods) {
+  public Value makeValuation(Set<Tradeable> goods) {
    RandomGenerator rng = new ISAACRandom();
    Double meanValue = valFunction.apply(goods.size());
    NormalDistribution normalDist = new NormalDistribution(rng, meanValue, this.baseVariance);
    Double actualValue = -1.0;
    while (actualValue < 0)
      actualValue = normalDist.sample();
-   return actualValue;
+   return new Value(actualValue);
   }
 
 //  @Override

@@ -8,6 +8,7 @@ import brown.generator.IValuationGenerator;
 import brown.generator.library.ValRandGenerator;
 import brown.valuable.IValuable;
 import brown.valuable.library.Tradeable;
+import brown.valuable.library.Value;
 import brown.valuation.IIndependentValuation;
 
 /**
@@ -17,7 +18,7 @@ import brown.valuation.IIndependentValuation;
  */
 public class AdditiveValuation implements IIndependentValuation {
 
-  private Map<Tradeable, Double> valMap;
+  private Map<Tradeable, Value> valMap;
   
   /**
    * default constructor.
@@ -36,21 +37,21 @@ public class AdditiveValuation implements IIndependentValuation {
    * @param goods
    */
   public AdditiveValuation(IValuationGenerator valGenerator, Set<Tradeable> goods) {
-    this.valMap = new HashMap<Tradeable, Double>();
+    this.valMap = new HashMap<Tradeable, Value>();
     for(Tradeable item : goods) {
-      double value = valGenerator.makeValuation(item);
+      Value value = valGenerator.makeValuation(item);
       valMap.put(item, value);
     }
   }
   
   @Override
-  public Double getValuation(Tradeable good) {
+  public Value getValuation(Tradeable good) {
     return valMap.get(good);
   }
 
   @Override
-  public Map<Tradeable, Double> getValuation(Set<Tradeable> goods) {
-    Map<Tradeable, Double> valuation = new HashMap<Tradeable, Double>();
+  public Map<Tradeable, Value> getValuation(Set<Tradeable> goods) {
+    Map<Tradeable, Value> valuation = new HashMap<Tradeable, Value>();
     for(IValuable item : goods) {
       valuation.put((Tradeable) item, valMap.get(item));
     }

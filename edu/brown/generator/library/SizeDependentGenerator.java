@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import brown.generator.IValuationGenerator;
 import brown.valuable.library.Tradeable;
+import brown.valuable.library.Value;
 
 public class SizeDependentGenerator implements IValuationGenerator {
 
@@ -17,13 +18,13 @@ public class SizeDependentGenerator implements IValuationGenerator {
   }
   
   @Override
-  public double makeValuation(Tradeable aGood) {
-   return valFunction.apply(1);
+  public Value makeValuation(Tradeable aGood) {
+   return new Value(valFunction.apply(1));
   }
   
   @Override
-  public double makeValuation(Set<Tradeable> aGood) {
-   return valFunction.apply(aGood.size());
+  public Value makeValuation(Set<Tradeable> aGood) {
+   return new Value(valFunction.apply(aGood.size()));
   }
   
 //  @Override

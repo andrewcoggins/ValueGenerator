@@ -4,20 +4,20 @@ import java.util.Set;
 
 import brown.generator.IValuationGenerator;
 import brown.valuable.library.Tradeable;
-import brown.valuation.library.AdditiveValuation;
+import brown.valuable.library.Value;
 
 public class UniformGenerator implements IValuationGenerator {
 
   @Override
-  public double makeValuation(Tradeable good) {
+  public Value makeValuation(Tradeable good) {
     // TODO Auto-generated method stub
-    return 0;
+    return new Value(0);
   }
 
   @Override
-  public double makeValuation(Set<Tradeable> goods) {
+  public Value makeValuation(Set<Tradeable> goods) {
     // TODO Auto-generated method stub
-    return 0;
+    return new Value(0);
   }
 
 

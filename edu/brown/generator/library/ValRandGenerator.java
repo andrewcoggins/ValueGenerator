@@ -4,6 +4,7 @@ import java.util.Set;
 
 import brown.generator.IValuationGenerator;
 import brown.valuable.library.Tradeable;
+import brown.valuable.library.Value;
 
 /**
  * generates a random value between zero and one.
@@ -26,15 +27,15 @@ public class ValRandGenerator implements IValuationGenerator {
   }
 
   @Override
-  public double makeValuation(Tradeable good) {
-    return (Math.random() * this.maxVal) + this.minVal;
+  public Value makeValuation(Tradeable good) {
+    return new Value((Math.random() * this.maxVal) + this.minVal);
   }
 
   @Override
-  public double makeValuation(Set<Tradeable> goods) {
+  public Value makeValuation(Set<Tradeable> goods) {
     Double setMin = this.minVal * goods.size();
     Double setMax = this.maxVal * goods.size();
-    return (Math.random() * setMax) + setMin;
+    return new Value((Math.random() * setMax) + setMin);
   }
   
   

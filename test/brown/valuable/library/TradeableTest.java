@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class GoodTest {
+public class TradeableTest {
   
   private Tradeable testGood = new Tradeable();
   private Tradeable testGoodTwo = new Tradeable(0);
