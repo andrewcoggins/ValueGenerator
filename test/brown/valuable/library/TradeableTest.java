@@ -4,6 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+/**
+ * trivial- basically testing that it has an 'equals'
+ * @author andrew
+ *
+ */
 public class TradeableTest {
   
   private Tradeable testGood = new Tradeable();
