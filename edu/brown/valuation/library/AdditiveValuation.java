@@ -10,6 +10,7 @@ import brown.valuable.IValuable;
 import brown.valuable.library.Tradeable;
 import brown.valuable.library.Value;
 import brown.valuation.IIndependentValuation;
+import brown.valuationrepresentation.SimpleValuation;
 
 /**
  * A Valuation where the values of each good are independent.
@@ -50,12 +51,12 @@ public class AdditiveValuation implements IIndependentValuation {
   }
 
   @Override
-  public Map<Tradeable, Value> getValuation(Set<Tradeable> goods) {
+  public SimpleValuation getValuation(Set<Tradeable> goods) {
     Map<Tradeable, Value> valuation = new HashMap<Tradeable, Value>();
     for(IValuable item : goods) {
       valuation.put((Tradeable) item, valMap.get(item));
     }
-    return valuation; 
+    return new SimpleValuation(valuation); 
   }
   
 }

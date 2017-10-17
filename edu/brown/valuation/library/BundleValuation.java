@@ -17,6 +17,9 @@ import brown.generator.library.ValRandGenerator;
 import brown.valuable.library.Tradeable;
 import brown.valuable.library.Value;
 import brown.valuation.IDependentValuation;
+import brown.valuationrepresentation.AValuationRepresentation;
+import brown.valuationrepresentation.ComplexValuation;
+import brown.valuationrepresentation.SimpleValuation;
 
 /**
  * a bundle valuation is more complicated. I gave it the tools implicit in the
@@ -52,7 +55,7 @@ public class BundleValuation implements IDependentValuation {
   }
 
   @Override
-  public Map<Set<Tradeable>, Value> getAllValuations() {
+  public ComplexValuation getValuation(Set<Tradeable> goods) {
     Map<Map<Integer, Tradeable>, Value> existingSetsID =
         new HashMap<Map<Integer, Tradeable>, Value>();
     // map to cater to necessary iteration structure for monotonicity
@@ -120,11 +123,11 @@ public class BundleValuation implements IDependentValuation {
       Set<Tradeable> goodsSet = new HashSet<Tradeable>(idGood.values());
       valMap.put(goodsSet, existingSetsID.get(idGood));
     }
-    return valMap;
+    return new ComplexValuation(valMap);
   }
 
   @Override
-  public Map<Set<Tradeable>, Value> getSomeValuations(Integer numValuations,
+  public AValuationRepresentation getSomeValuations(Integer numValuations,
       Integer bundleSizeMean, Double bundleSizeStdDev) {
     if (bundleSizeMean > 0 && bundleSizeStdDev > 0) {
       Map<Set<Tradeable>, Value> returnMap = new HashMap<Set<Tradeable>, Value>();
@@ -190,7 +193,7 @@ public class BundleValuation implements IDependentValuation {
           }
         }
       }
-      return returnMap;
+      return new ComplexValuation(returnMap);
     } else {
       System.out.println("ERROR: bundle size parameters not positive");
       throw new NotStrictlyPositiveException(bundleSizeMean);

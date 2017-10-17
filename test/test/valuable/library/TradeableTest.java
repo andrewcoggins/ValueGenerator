@@ -1,8 +1,10 @@
-package brown.valuable.library; 
+package test.valuable.library; 
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import brown.valuable.library.Tradeable;
 
 /**
  * trivial- basically testing that it has an 'equals'

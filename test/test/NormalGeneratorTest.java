@@ -1,15 +1,15 @@
-package brown.generator.library; 
+package test; 
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-
-import brown.valuable.library.Bundle;
+import brown.generator.library.NormalGenerator;
 import brown.valuable.library.Tradeable;
 import brown.valuation.IValuation;
 import brown.valuation.library.BundleValuation;
-import brown.valuation.library.BundleValuationSet;
+import test.valuable.library.Bundle;
+import test.valuation.library.BundleValuationSet;
 
 public class NormalGeneratorTest {
   

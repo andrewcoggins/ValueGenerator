@@ -1,4 +1,4 @@
-package brown.generator.library;
+package test.generator.library;
 
 import static org.junit.Assert.assertTrue;
 
@@ -8,6 +8,8 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.random.ISAACRandom;
 import org.junit.Test;
 
+import brown.generator.library.NormalGenerator;
+import brown.generator.library.ValRandGenerator;
 import brown.valuable.library.Tradeable;
 
 /**
@@ -15,7 +17,7 @@ import brown.valuable.library.Tradeable;
  * from my normal generator, an apache commons normal generator, and 
  * the random generator, and testing that the KS statistic of my 
  * normal generator and the apache generator is less than that of 
- * the random generator and the apache generator. Kind of trivial
+ * the random generator and the apache generator. Kind of trivial here
  * but this method may come in handy or other distributional tests.
  * @author andrew
  *

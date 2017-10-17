@@ -1,4 +1,4 @@
-package brown.generator.library; 
+package test; 
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,12 +9,13 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
-import brown.valuable.library.Bundle;
+import brown.generator.library.SizeDependentGenerator;
 import brown.valuable.library.Tradeable;
 import brown.valuation.library.AdditiveValuation;
-import brown.valuation.library.AdditiveValuationSet;
 import brown.valuation.library.BundleValuation;
-import brown.valuation.library.BundleValuationSet;
+import test.valuable.library.Bundle;
+import test.valuation.library.AdditiveValuationSet;
+import test.valuation.library.BundleValuationSet;
 
 public class SizeDependentGeneratorTest {
   

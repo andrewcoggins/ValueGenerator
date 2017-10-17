@@ -1,4 +1,4 @@
-package brown.generator.library;
+package test.generator.library;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import brown.generator.library.SizeDependentGenerator;
 import brown.valuable.library.Tradeable;
 import brown.valuable.library.Value;
 

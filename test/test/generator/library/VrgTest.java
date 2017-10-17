@@ -1,9 +1,10 @@
-package brown.generator.library;
+package test.generator.library;
 
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import brown.generator.library.ValRandGenerator;
 import brown.valuable.library.Tradeable;
 
 public class VrgTest {

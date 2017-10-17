@@ -1,4 +1,4 @@
-package brown.valuation.library;
+package test.valuation.library;
 
 import org.junit.Test;
 

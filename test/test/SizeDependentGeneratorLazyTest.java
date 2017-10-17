@@ -1,11 +1,12 @@
-package brown.generator.library; 
+package test; 
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import brown.valuable.library.Bundle;
+import brown.generator.library.SizeDependentGenerator;
 import brown.valuable.library.Tradeable;
+import test.valuable.library.Bundle;
 
 public class SizeDependentGeneratorLazyTest {
   
